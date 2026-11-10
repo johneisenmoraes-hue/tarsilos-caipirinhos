@@ -1,0 +1,678 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz | Jornada Modernista</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --verde: #183e2b;
+            --creme: #fff1d2;
+            --amarelo: #f5c653;
+            --rosa: #ed887d;
+            --azul: #8ccbd2;
+            --roxo: #b6a0d9;
+            --texto: #20352a;
+            --cartao: #ffffff;
+            --borda: #e6dfc9;
+        }
+
+        body.escuro {
+            --verde: #b6d8b9;
+            --creme: #202c25;
+            --texto: #f3f4e9;
+            --cartao: #2d3b32;
+            --borda: #506657;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Trebuchet MS", Arial, sans-serif;
+            color: var(--texto);
+            background: var(--creme);
+            transition: background .3s, color .3s;
+        }
+
+        /* CABEÇALHO */
+
+        header {
+            min-height: 280px;
+            padding: 35px 7%;
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+            background:
+                radial-gradient(circle at 86% 23%, var(--amarelo) 0 68px, transparent 70px),
+                radial-gradient(ellipse at 12% 100%, #e9a76e 0 100px, transparent 102px),
+                linear-gradient(160deg, #75b7d0, #a5c9bd 65%, #e8c989);
+            border-bottom: 7px solid #183e2b;
+        }
+
+        header::after {
+            content: "";
+            position: absolute;
+            width: 270px;
+            height: 100px;
+            right: -35px;
+            bottom: -52px;
+            border-radius: 50%;
+            background: #2f7050;
+        }
+
+        header h1 {
+            position: relative;
+            z-index: 1;
+            margin: 15px 0;
+            color: #183e2b;
+            font-family: Georgia, serif;
+            font-size: clamp(2.3rem, 6vw, 3.8rem);
+            text-shadow: 3px 3px 0 #ffffffa8;
+        }
+
+        header p {
+            position: relative;
+            z-index: 1;
+            max-width: 650px;
+            margin: auto;
+            color: #20352a;
+            line-height: 1.7;
+        }
+
+        /* CONTEÚDO */
+
+        main {
+            width: min(900px, 92%);
+            margin: 30px auto;
+        }
+
+        .painel {
+            padding: 22px;
+            margin-bottom: 22px;
+            background: var(--cartao);
+            border: 2px solid var(--borda);
+            border-radius: 20px;
+            box-shadow: 0 6px 18px #183e2b18;
+        }
+
+        .informacoes {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .estatistica {
+            display: inline-block;
+            padding: 10px 15px;
+            background: #edf2e7;
+            color: #183e2b;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        body.escuro .estatistica {
+            background: #405448;
+            color: #f3f4e9;
+        }
+
+        .acao {
+            border: 0;
+            border-radius: 30px;
+            padding: 11px 17px;
+            color: white;
+            background: #183e2b;
+            font-weight: bold;
+        }
+
+        .acao:hover {
+            background: #2e6545;
+            color: white;
+        }
+
+        .secundario {
+            color: #183e2b;
+            background: #f5c653;
+        }
+
+        .secundario:hover {
+            color: #183e2b;
+            background: #e8b842;
+        }
+
+        /* ÁREA DA QUESTÃO */
+
+        .quiz {
+            padding: 30px;
+            min-height: 350px;
+            transition: opacity .25s ease;
+        }
+
+        .quiz.trocando {
+            opacity: .25;
+        }
+
+        .numero {
+            color: #72906c;
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        #pergunta {
+            margin: 20px 0;
+            font-family: Georgia, serif;
+            font-size: 1.5rem;
+            color: var(--verde);
+        }
+
+        .alternativa {
+            width: 100%;
+            padding: 15px;
+            margin: 7px 0;
+            text-align: left;
+            border: 2px solid var(--borda);
+            border-radius: 13px;
+            background: var(--cartao);
+            color: var(--texto);
+            transition: background .2s, border-color .2s;
+        }
+
+        .alternativa:hover:not(:disabled) {
+            background: #f5e9c9;
+            border-color: #c7a64c;
+        }
+
+        body.escuro .alternativa:hover:not(:disabled) {
+            background: #405448;
+        }
+
+        .correta {
+            background: #c6e6c8 !important;
+            border-color: #36834b !important;
+            color: #174c27 !important;
+        }
+
+        .errada {
+            background: #f3caca !important;
+            border-color: #bd4545 !important;
+            color: #812323 !important;
+        }
+
+        #feedback {
+            min-height: 25px;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        .progress {
+            height: 12px;
+            background: #e5e2d5;
+            border-radius: 20px;
+        }
+
+        .progress-bar {
+            background: #39744c;
+            transition: width .3s ease;
+        }
+
+        /* RESULTADO */
+
+        .emoji-resultado {
+            font-size: 75px;
+            margin: 15px;
+        }
+
+        .resultado-titulo {
+            color: var(--verde);
+            font-family: Georgia, serif;
+        }
+
+        .rodape {
+            text-align: center;
+            margin: 30px 0;
+            opacity: .8;
+        }
+
+        @media (max-width: 600px) {
+            header {
+                min-height: 260px;
+            }
+
+            .quiz {
+                padding: 20px;
+            }
+
+            .informacoes {
+                justify-content: center;
+                text-align: center;
+            }
+
+            #pergunta {
+                font-size: 1.25rem;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                transition: none !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- CABEÇALHO -->
+    <header>
+        <h1>Quiz Modernista</h1>
+
+        <p>
+            Uma jornada pelo Modernismo brasileiro.
+            Teste seus conhecimentos sobre Tarsila do Amaral,
+            suas obras e a história da arte brasileira.
+        </p>
+    </header>
+
+    <main>
+
+        <!-- PAINEL DE INFORMAÇÕES -->
+        <section class="painel">
+
+            <div class="informacoes">
+
+                <div class="d-flex flex-wrap gap-2 justify-content-center">
+                    <span class="estatistica">
+                        Questão: <span id="numeroQuestao">1/10</span>
+                    </span>
+
+                    <span class="estatistica">
+                        Pontos: <span id="pontuacao">0</span>
+                    </span>
+                </div>
+
+                <div class="d-flex gap-2 justify-content-center">
+                    <button class="btn acao" onclick="reiniciarQuiz()">
+                        ↻ Reiniciar
+                    </button>
+
+                    <button class="btn acao secundario" id="tema">
+                        ☾ Modo escuro
+                    </button>
+                </div>
+
+            </div>
+
+            <div class="progress mt-4">
+                <div
+                    id="barraProgresso"
+                    class="progress-bar"
+                    style="width: 0%">
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ÁREA DO QUIZ -->
+        <section class="painel quiz" id="areaQuiz">
+
+            <div class="numero" id="identificacao">
+                Questão 01
+            </div>
+
+            <h2 id="pergunta">
+                Carregando pergunta...
+            </h2>
+
+            <div id="alternativas"></div>
+
+            <p id="feedback" role="status" aria-live="polite"></p>
+
+            <div class="text-end">
+                <button
+                    id="proximo"
+                    class="btn acao"
+                    onclick="proximaQuestao()"
+                    disabled>
+                    Próxima questão →
+                </button>
+            </div>
+
+            <div id="resultado" class="text-center"></div>
+
+        </section>
+
+        <p class="rodape">
+            ✿ Jornada Modernista • Aprender arte também pode ser divertido.
+        </p>
+
+    </main>
+
+    <script>
+
+        // QUESTÕES
+
+        const questoes = [
+            {
+                pergunta: "Quem foi Tarsila do Amaral?",
+                alternativas: [
+                    "Uma escritora brasileira",
+                    "Uma pintora modernista brasileira",
+                    "Uma cantora brasileira"
+                ],
+                correta: 1
+            },
+            {
+                pergunta: "Em qual movimento artístico Tarsila se destacou?",
+                alternativas: [
+                    "Modernismo",
+                    "Barroco",
+                    "Romantismo"
+                ],
+                correta: 0
+            },
+            {
+                pergunta: "Qual é uma das obras mais famosas de Tarsila?",
+                alternativas: [
+                    "Mona Lisa",
+                    "O Grito",
+                    "Abaporu"
+                ],
+                correta: 2
+            },
+            {
+                pergunta: "Em que ano foi realizada a Semana de Arte Moderna?",
+                alternativas: [
+                    "1922",
+                    "1889",
+                    "1945"
+                ],
+                correta: 0
+            },
+            {
+                pergunta: "Onde aconteceu a Semana de Arte Moderna?",
+                alternativas: [
+                    "Rio de Janeiro",
+                    "São Paulo",
+                    "Salvador"
+                ],
+                correta: 1
+            },
+            {
+                pergunta: "Qual era uma característica do Modernismo brasileiro?",
+                alternativas: [
+                    "Imitar somente a arte europeia",
+                    "Rejeitar qualquer inovação",
+                    "Buscar novas formas de expressão artística"
+                ],
+                correta: 2
+            },
+            {
+                pergunta: "Qual obra de Tarsila foi pintada em 1928?",
+                alternativas: [
+                    "Abaporu",
+                    "A Noite Estrelada",
+                    "O Nascimento de Vênus"
+                ],
+                correta: 0
+            },
+            {
+                pergunta: "O que o movimento antropofágico defendia?",
+                alternativas: [
+                    "A cópia exata da cultura europeia",
+                    "A apropriação e transformação de influências estrangeiras",
+                    "O abandono da cultura brasileira"
+                ],
+                correta: 1
+            },
+            {
+                pergunta: "Qual artista foi associado ao movimento modernista brasileiro?",
+                alternativas: [
+                    "Leonardo da Vinci",
+                    "Michelangelo",
+                    "Anita Malfatti"
+                ],
+                correta: 2
+            },
+            {
+                pergunta: "Qual era um dos objetivos do Modernismo brasileiro?",
+                alternativas: [
+                    "Valorizar uma identidade artística nacional",
+                    "Manter somente os padrões clássicos",
+                    "Impedir novas manifestações culturais"
+                ],
+                correta: 0
+            }
+        ];
+
+        // VARIÁVEIS
+
+        let questaoAtual = 0;
+        let pontos = 0;
+        let respondeu = false;
+
+        const areaQuiz = document.getElementById("areaQuiz");
+
+        // CARREGAR QUESTÃO
+
+        function carregarQuestao() {
+
+            respondeu = false;
+
+            const questao = questoes[questaoAtual];
+
+            document.getElementById("numeroQuestao").textContent =
+                `${questaoAtual + 1}/10`;
+
+            document.getElementById("pontuacao").textContent = pontos;
+
+            document.getElementById("identificacao").textContent =
+                `Questão ${String(questaoAtual + 1).padStart(2, "0")}`;
+
+            document.getElementById("pergunta").textContent =
+                questao.pergunta;
+
+            document.getElementById("feedback").textContent = "";
+
+            document.getElementById("proximo").disabled = true;
+
+            document.getElementById("proximo").textContent =
+                questaoAtual === 9 ? "Ver resultado →" : "Próxima questão →";
+
+            document.getElementById("barraProgresso").style.width =
+                `${(questaoAtual / 10) * 100}%`;
+
+            const area = document.getElementById("alternativas");
+
+            area.innerHTML = "";
+
+            questao.alternativas.forEach((alternativa, indice) => {
+
+                const botao = document.createElement("button");
+
+                botao.textContent = alternativa;
+                botao.className = "btn alternativa";
+
+                botao.onclick = () => verificarResposta(indice, botao);
+
+                area.appendChild(botao);
+
+            });
+
+        }
+
+        // VERIFICAR RESPOSTA
+
+        function verificarResposta(indice, botaoSelecionado) {
+
+            if (respondeu) return;
+
+            respondeu = true;
+
+            const questao = questoes[questaoAtual];
+
+            const botoes = document.querySelectorAll(".alternativa");
+
+            const feedback = document.getElementById("feedback");
+
+            botoes.forEach(botao => {
+                botao.disabled = true;
+            });
+
+            if (indice === questao.correta) {
+
+                pontos++;
+
+                botaoSelecionado.classList.add("correta");
+
+                feedback.textContent = "✓ Muito bem! Resposta correta.";
+                feedback.style.color = "#36834b";
+
+            } else {
+
+                botaoSelecionado.classList.add("errada");
+
+                botoes[questao.correta].classList.add("correta");
+
+                feedback.textContent =
+                    "✗ Resposta incorreta! Veja a alternativa correta em verde.";
+
+                feedback.style.color = "#bd4545";
+
+            }
+
+            document.getElementById("pontuacao").textContent = pontos;
+
+            document.getElementById("proximo").disabled = false;
+
+        }
+
+        // TRANSIÇÃO ENTRE QUESTÕES
+
+        function proximaQuestao() {
+
+            areaQuiz.classList.add("trocando");
+
+            setTimeout(() => {
+
+                questaoAtual++;
+
+                if (questaoAtual < questoes.length) {
+                    carregarQuestao();
+                } else {
+                    mostrarResultado();
+                }
+
+                areaQuiz.classList.remove("trocando");
+
+            }, 250);
+
+        }
+
+        // RESULTADO FINAL
+
+        function mostrarResultado() {
+
+            document.getElementById("identificacao").textContent =
+                "FIM DO QUIZ";
+
+            document.getElementById("pergunta").textContent =
+                "Sua jornada chegou ao fim!";
+
+            document.getElementById("alternativas").innerHTML = "";
+
+            document.getElementById("feedback").textContent = "";
+
+            document.getElementById("proximo").style.display = "none";
+
+            document.getElementById("barraProgresso").style.width = "100%";
+
+            let emoji = "";
+            let mensagem = "";
+
+            if (pontos === 10) {
+                emoji = "🏆";
+                mensagem = "Perfeito! Você acertou todas as questões!";
+            } else if (pontos >= 8) {
+                emoji = "🤩";
+                mensagem = "Excelente! Você conhece muito bem o Modernismo!";
+            } else if (pontos >= 5) {
+                emoji = "😊";
+                mensagem = "Muito bom! Você demonstrou bons conhecimentos!";
+            } else {
+                emoji = "📚";
+                mensagem = "Continue estudando! Você pode melhorar!";
+            }
+
+            document.getElementById("resultado").innerHTML = `
+
+                <div class="emoji-resultado">${emoji}</div>
+
+                <h2 class="resultado-titulo">Seu resultado final</h2>
+
+                <h1 class="display-4">${pontos}/10</h1>
+
+                <p class="mt-3">${mensagem}</p>
+
+                <button class="btn acao mt-3"
+                        onclick="reiniciarQuiz()">
+                    ↻ Jogar novamente
+                </button>
+
+            `;
+
+            document.getElementById("numeroQuestao").textContent =
+                "Concluído";
+
+        }
+
+        // REINICIAR
+
+        function reiniciarQuiz() {
+
+            questaoAtual = 0;
+            pontos = 0;
+
+            document.getElementById("proximo").style.display =
+                "inline-block";
+
+            document.getElementById("resultado").innerHTML = "";
+
+            carregarQuestao();
+
+        }
+
+        // MODO ESCURO
+
+        document.getElementById("tema").addEventListener("click", () => {
+
+            document.body.classList.toggle("escuro");
+
+            const escuro = document.body.classList.contains("escuro");
+
+            const botao = document.getElementById("tema");
+
+            botao.textContent = escuro
+                ? "☀ Modo claro"
+                : "☾ Modo escuro";
+
+        });
+
+        // INICIAR
+
+        carregarQuestao();
+
+    </script>
+
+</body>
+</html>
